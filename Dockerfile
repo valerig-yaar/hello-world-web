@@ -1,28 +1,16 @@
-# Stage 1: Build (optional, in case you later use TS or want linting, npm install etc.)
-FROM node:18-alpine AS builder
-WORKDIR /app
-COPY index.js . 
-
-# Stage 2: Run with secure, minimal base
 FROM node:18-alpine
 
-# Create non-root user and group
-RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+# Add curl for healthcheck
+RUN apk add --no-cache curl \
+  && addgroup -S appgroup && adduser -S appuser -G appgroup
 
-# Create working directory
 WORKDIR /app
+COPY index.js .
 
-# Copy only required files
-COPY --from=builder /app/index.js .
-
-# Drop privileges
 USER appuser
 
-# Expose only necessary port
 EXPOSE 80
+HEALTHCHECK CMD curl --fail http://localhost/ || exit 1
 
-# Set security-relevant environment variables
 ENV NODE_ENV=production
-
-# Run the app
 CMD ["node", "index.js"]
