@@ -38,21 +38,19 @@ jobs:
         run: |
           docker build -t $IMAGE_NAME:latest .
 
-      # --- Static Dockerfile Lint ---
-      - name: Run Hadolint
-        uses: hadolint/hadolint-action@v3
+      - name: Run Hadolint (Dockerfile linter)
+        uses: reviewdog/action-hadolint@v1
         with:
-          dockerfile: Dockerfile
+          reporter: github-pr-check
+          level: warning
 
-      # --- Scan Docker Image Config ---
-      - name: Run Dockle (Docker image best practices)
+      - name: Run Dockle (Best practices scan)
         uses: erzz/dockle-action@v1
         with:
           image: ${{ env.IMAGE_NAME }}:latest
 
-      # --- Vulnerability Scanner ---
       - name: Run Trivy Vulnerability Scanner
-        uses: aquasecurity/trivy-action@v0.18.0
+        uses: aquasecurity/trivy-action@master  # latest version (recommended)
         with:
           image-ref: ${{ env.IMAGE_NAME }}:latest
           format: table
@@ -60,5 +58,4 @@ jobs:
           ignore-unfixed: true
 
       - name: Push Image to GHCR
-        run: |
-          docker push $IMAGE_NAME:latest
+        run: docker push $IMAGE_NAME:latest
