@@ -1,11 +1,13 @@
 const http = require('http');
 const env = process.env.ENV || 'not-set';
 const podIP = process.env.POD_IP || 'unknown';
+const version = process.env.APP_VERSION || 'unknown';
 
 const html = `
 <!DOCTYPE html>
 <html>
 <head>
+  <meta charset="UTF-8">
   <title>Hello from ${env}</title>
   <style>
     body {
@@ -41,6 +43,10 @@ const html = `
       font-weight: bold;
       color: #008c5f;
     }
+    .version {
+      font-weight: bold;
+      color: #8c00a6;
+    }
   </style>
 </head>
 <body>
@@ -48,6 +54,7 @@ const html = `
     <h1>Hello World 🌍</h1>
     <p>Environment: <span class="env">${env}</span></p>
     <p>Pod IP: <span class="ip">${podIP}</span></p>
+    <p>Version: <span class="version">${version}</span></p>
   </div>
 </body>
 </html>
